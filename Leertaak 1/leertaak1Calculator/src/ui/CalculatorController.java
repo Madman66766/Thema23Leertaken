@@ -74,7 +74,11 @@ public class CalculatorController implements ActionListener{
                 updateCalculatior();
                 break;
             case "/":
-                calculator.divide();
+                try {
+                    calculator.divide();
+                } catch (IllegalArgumentException ex){
+                    view.getLabelMessage().setText(ex.getMessage());
+                }
                 updateCalculatior();
                 break;
             case "Bin":
