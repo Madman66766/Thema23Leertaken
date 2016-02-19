@@ -14,6 +14,8 @@ public class Main {
         CalculatorController controller = new CalculatorController();
 
         frame.setContentPane(controller.getView());
+        frame.setJMenuBar(controller.getView().makeMenuBar(controller));
+
         frame.pack();
         frame.setVisible(true);
 

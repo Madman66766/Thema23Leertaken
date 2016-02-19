@@ -72,7 +72,7 @@ public abstract class Base {
     for(int i = 0; i < number.length(); i++)
       if(number.charAt(i)!='.'){
         if (digits.indexOf(number.charAt(i)) == -1)
-          throw new NumberBaseException(name);
+          throw new NumberBaseException("Wrong operand for " + name  + " base " );
         result += mult * digits.indexOf(number.charAt(i));
         mult /= base;
       }

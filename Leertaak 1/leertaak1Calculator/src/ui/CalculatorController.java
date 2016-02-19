@@ -14,13 +14,15 @@ public class CalculatorController implements ActionListener{
 
     Calculator calculator;
     CalculatorView view;
-    boolean running = true;
+    final String BEGIN_STATE = "0.0";
+    String operand_1, operand_2, operation, arithmeticExpression;
+    boolean isCalculated, isFirstOperand, running = true;
 
     public CalculatorController(){
         view = new CalculatorView(this);
         calculator = new Calculator();
-        running = true;
-        updateCalculatior();
+        reset();
+        updateCalculator();
     }
 
     public CalculatorView getView() {
@@ -31,11 +33,11 @@ public class CalculatorController implements ActionListener{
         return running;
     }
 
-    void printHelp() {
+    public void printHelp() {
         JOptionPane.showMessageDialog(new Panel(), "\n" +
                 " Choose one of the following commands:\n" +
                 " +            (sum the last two operands)\n" +
-                " -            (substract the last operand from the previous one)\n" +
+                " -            (subtract the last operand from the previous one)\n" +
                 " *            (multiply the last two operands)\n" +
                 " /            (divide the last two operands)\n" +
                 " Bin          (switch to binary base)\n" +
@@ -44,87 +46,144 @@ public class CalculatorController implements ActionListener{
                 " Hex          (switch to hexadecimal base)\n" +
                 " Fixed        (switch to fixed point format)\n" +
                 " Float        (switch to floating point format)\n" +
-                " Rational          (switch to rational format)\n" +
-                " CE          (remove last operand)\n" +
+                " Rational     (switch to rational format)\n" +
+                " CE           (clear everything)\n" +
                 " Help         (print this command list)", "Question", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void updateCalculatior() {
-        view.getLabelOutput().setText("["+calculator.getBase().getName()+","
-                + calculator.getFormat().getName()+","
-                + calculator.firstOperand() + ", "
-                + calculator.secondOperand() + "]");
-        view.getLabelAmountOfCalculations().setText("Amount of performed calculations: " +calculator.getAmountOfCalculations());
+    private void reset(){
+        operand_1 = "";
+        operand_2 = "";
+        operation = null;
+        arithmeticExpression = BEGIN_STATE;
+        isFirstOperand = true;
+        isCalculated = false;
+        view.getLabelError().setText("Currently no errors");
+        view.getLabelError().setForeground(Color.darkGray);
+    }
+
+    private void updateCalculator() {
+        view.getLabelAmountOfCalculations().setText("Amount of calculations performed : " +calculator.getAmountOfCalculations());
+        view.getLabelBase().setText("Current base: " + calculator.getBase().getName());
+        view.getLabelFormat().setText("Current format: " + calculator.getFormat().getName());
+
+        if (isCalculated) {
+            view.getLabelOutput().setText(calculator.secondOperand());
+            isCalculated = false;
+        }
+        else
+            view.getLabelOutput().setText(arithmeticExpression);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        JButton test = (JButton) e.getSource();
-        switch (test.getText()){
-            case "+":
-                calculator.add();
-                updateCalculatior();
-                break;
-            case "-":
-                calculator.subtract();
-                updateCalculatior();
-                break;
-            case "*":
-                calculator.multiply();
-                updateCalculatior();
-                break;
-            case "/":
-                try {
-                    calculator.divide();
-                } catch (IllegalArgumentException ex){
-                    view.getLabelMessage().setText(ex.getMessage());
-                }
-                updateCalculatior();
-                break;
+        AbstractButton source = (AbstractButton) e.getSource();
+
+        switch (source.getText()){
             case "Bin":
-                calculator.setBase(new BinaryBase());
-                updateCalculatior();
-                break;
             case "Oct":
-                calculator.setBase(new OctalBase());
-                updateCalculatior();
-                break;
             case "Dec":
-                calculator.setBase(new DecimalBase());
-                updateCalculatior();
-                break;
             case "Hex":
-                calculator.setBase(new HexBase());
-                updateCalculatior();
+                switch (source.getText()){
+                    case "Bin":
+                        calculator.setBase(new BinaryBase());
+                        break;
+                    case "Oct":
+                        calculator.setBase(new OctalBase());
+                        break;
+                    case "Dec":
+                        calculator.setBase(new DecimalBase());
+                        break;
+                    case "Hex":
+                        calculator.setBase(new HexBase());
+                        break;
+                }
+                isCalculated = true;
+                updateCalculator();
                 break;
             case "Fixed":
-                calculator.setFormat(new FixedPointFormat());
-                updateCalculatior();
-                break;
             case "Float":
-                calculator.setFormat(new FloatingPointFormat());
-                updateCalculatior();
-                break;
             case "Rational":
-                calculator.setFormat(new RationalFormat());
-                updateCalculatior();
+                switch (source.getText()) {
+                    case "Fixed":
+                        calculator.setFormat(new FixedPointFormat());
+                        break;
+                    case "Float":
+                        calculator.setFormat(new FloatingPointFormat());
+                        break;
+                    case "Rational":
+                        calculator.setFormat(new RationalFormat());
+                        break;
+                }
+                isCalculated = true;
+               updateCalculator();
                 break;
             case "CE":
                 calculator.delete();
-                updateCalculatior();
+                reset();
+                updateCalculator();
                 break;
-            case "Help":
+            case "Print help":
                 printHelp();
                 break;
-            default:
+            case "+":
+            case "-":
+            case "*":
+            case "/":
                 try{
-                    calculator.addOperand(test.getText());
+                    calculator.addOperand(operand_1);
+                    operation = source.getText();
+                    arithmeticExpression = calculator.secondOperand() + " " + source.getText() + " ";
+                    isFirstOperand = false;
+                    updateCalculator();
                 }catch(FormatException ex){
-                    view.getLabelMessage().setText("Wrong operand: " + ex.getMessage());
+                    view.getLabelError().setText("Wrong operand: " + ex.getMessage());
+                    view.getLabelError().setForeground(Color.red);
                 } catch (NumberBaseException ex) {
-                    view.getLabelMessage().setText("Wrong operand for current base : " + ex.getMessage());
+                    view.getLabelError().setText("Error: " + ex.getMessage());
+                    view.getLabelError().setForeground(Color.red);
                 }
-                updateCalculatior();
+                break;
+            case "=":
+                try{
+                    calculator.addOperand(operand_2);
+                    switch (operation) {
+                        case "+":
+                            calculator.add();
+                            break;
+                        case "-":
+                            calculator.subtract();
+                            break;
+                        case "*":
+                            calculator.multiply();
+                            break;
+                        case "/":
+                            calculator.divide();
+                            break;
+                    }
+                    isCalculated = true;
+                    updateCalculator();
+                    reset();
+                }catch(FormatException ex){
+                    view.getLabelError().setText("Wrong operand: " + ex.getMessage());
+                } catch (NumberBaseException ex) {
+                    view.getLabelError().setText("Error: " + ex.getMessage());
+                }
+                break;
+            default:
+                if (isFirstOperand) {
+                    operand_1 = operand_1.concat(source.getText());
+                    System.out.println(" Operand1 = [" + operand_1 + "]");
+                } else {
+                    operand_2 = operand_2.concat(source.getText());
+                    System.out.println("Operand 2 = [" + operand_2 + "]");
+                }
+                if (arithmeticExpression.equals(BEGIN_STATE)) {
+                    arithmeticExpression = source.getText();
+                } else {
+                    arithmeticExpression = arithmeticExpression.concat(source.getText());
+                }
+                updateCalculator();
                 break;
         }
     }
