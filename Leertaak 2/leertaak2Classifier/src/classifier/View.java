@@ -10,14 +10,19 @@ public class View extends JFrame {
 
     private JLabel labelTitle;
     private JLabel labelQuestion;
-    private int counter = -1;
+    private int counter = 0;
     private String answer[];
-    private String features[];
-    private String item;
+    private String featuresNames[];
+    private String stringItem;
+    private Feature[] features;
+    private DecisionTree decisionTree;
+    Item item = null;
 
-    public View(String title, String features[]){
+    public View(String title, String featuresNames[],Feature[] features,DecisionTree decisionTree){
         super(title);
+        this.featuresNames = featuresNames;
         this.features = features;
+        this.decisionTree = decisionTree;
         answer = new String[9];
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setContentPane(buildPanel());
@@ -36,13 +41,13 @@ public class View extends JFrame {
         labelQuestion.setFont(new Font("", Font.PLAIN, 30));
         JTextField textField = new JTextField();
         textField.addActionListener(e -> {
-            counter++;
             switch (counter) {
                 case 0:
-                    item = textField.getText();
-                    labelTitle.setText("Item: " + item);
-                    labelQuestion.setText("Does " + item + " have " + features[counter].toLowerCase()+ "?");
+                    stringItem = textField.getText();
+                    labelTitle.setText("Item: " + stringItem);
+                    labelQuestion.setText("Does " + stringItem + " have " + featuresNames[counter].toLowerCase()+ "?");
                     textField.setText("");
+                    item = new Item(stringItem,features);
                     break;
                 case 1:
                 case 2:
@@ -51,15 +56,22 @@ public class View extends JFrame {
                 case 5:
                 case 6:
                 case 7:
-                    labelTitle.setText("Item: " + item);
-                    labelQuestion.setText("Does " + item + " have " + features[counter].toLowerCase()+ "?");
-                    answer[counter] = textField.getText();
+                    labelTitle.setText("Item: " + stringItem);
+                    labelQuestion.setText("Does " + stringItem + " have " + featuresNames[counter].toLowerCase()+ "?");
+                    answer[counter-1] = textField.getText();
                     textField.setText("");
                     break;
                 case 8:
-                    answer[counter] = textField.getText();
+                    answer[counter-1] = textField.getText();
+                    textField.setText("");
                     break;
+                case 9:
+                    System.out.print(getCategory(item));
+                    break;
+                default:
+
             }
+            counter++;
         });
         panel.add(labelTitle);
         panel.add(labelQuestion);
@@ -68,7 +80,13 @@ public class View extends JFrame {
         return panel;
 
     }
-
+    private String getCategory(Item item){
+        for (int i = 0;i < featuresNames.length;i++){
+            item.setFeatureValue(featuresNames[i],answer[i]);
+        }
+        String category = decisionTree.assignCategory(item);
+        return category;
+    }
 
 
 }
