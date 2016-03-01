@@ -1,4 +1,3 @@
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.Random;
 
 /**
@@ -10,18 +9,18 @@ public class Main {
 
     public static void main(String args[]) {
         BinaryTree tree = new BinaryTree();
-        int arrayData[] = initArray(5);//{40, 32, 25, 78, 10};//initArray(5);
+        int arrayData[] = {40, 32, 25, 78, 10};//initArray(5);
 
         for (int data: arrayData) {
             tree.insert(data);
         }
 
-        System.out.println();
-        tree.printInorder();
+//        System.out.println();
+//        tree.printInorder();
         System.out.println();
         tree.printPreOrder();
-        System.out.println();
-        tree.printPostOrder();
+//        System.out.println();
+//        tree.printPostOrder();
     }
 
     private static int[] initArray(int length){

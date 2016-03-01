@@ -53,7 +53,7 @@ public class BinaryTree {
             if (current != null) {
                 System.out.print(" [" + current.data + "] ");
                 stackNodes.push(current);
-                current = current.right;
+                current = current.left;
             } else {
                 current = stackNodes.pop();
                 current = current.right;
