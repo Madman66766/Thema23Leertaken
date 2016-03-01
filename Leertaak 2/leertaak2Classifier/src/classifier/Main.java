@@ -12,13 +12,25 @@ public class Main {
 
     private static final String FILE_FEATURES = "src/test/OptiesText.txt";
     private static final String FILE_TRAINING_SET = "../TrainingSets/TrainingSet.txt";
+    private static DecisionTree decisionTree;
 
     public static void main(String args[]){
         HashMap<String, FeatureType> hashMapFeatures = getFeaturesMap();
         HashMap<Item, String> hashMapTrainingsSet = getTrainingSet(hashMapFeatures);
-        DecisionTree decisionTree = new DecisionTree(hashMapTrainingsSet, hashMapFeatures);
+        decisionTree = new DecisionTree(hashMapTrainingsSet, hashMapFeatures);
         System.out.println(decisionTree.toString());
-        new View("Classifier", getFeaturesString());
+        Feature[] features = getFeatures(getFeaturesMap(),getFeaturesString());
+        new View("Classifier", getFeaturesString(),features,decisionTree);
+    }
+
+    private static Feature[] getFeatures(HashMap<String, FeatureType> featureTypes, String[] featureNames){
+        Feature[] features = new Feature[featureNames.length];
+        for (int i = 0;i < featureNames.length;i++){
+            FeatureType featureType = featureTypes.get(featureNames[i]);
+            Feature feature = new Feature(featureNames[i],"0",featureType);
+            features[i] = feature;
+        }
+        return features;
     }
 
     private static HashMap<String, FeatureType> getFeaturesMap(){
