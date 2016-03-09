@@ -1,5 +1,8 @@
 package ttt;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 class TicTacToe
 {
@@ -18,10 +21,14 @@ class TicTacToe
 	private int side=random.nextInt(2);  
 	private int position=UNCLEAR;
 	private char computerChar,humanChar;
+	private ArrayList<Integer> scores = new ArrayList<>();
+	private ArrayList<Integer> moves = new ArrayList<>();
 
 	// Constructor
 	public TicTacToe( )
 	{
+		scores.clear();
+		moves.clear();
 		clearBoard( );
 		initSide();
 		initBoard();
@@ -60,26 +67,88 @@ class TicTacToe
 
 	public int chooseMove()
 	{
-	    //Best best=chooseMove(COMPUTER);
-	    //return best.row*3+best.column;
-	    return 0;
+		scores.clear();
+		moves.clear();
+	    Best best=chooseMove(COMPUTER,0);
+	    return best.row*3+best.column;
+	    //return 0;
     }
     
     // Find optimal move
-	private Best chooseMove( int side )
+	private Best chooseMove( int side, int depth )
 	{
 		int opp;              // The other side
-		Best reply;           // Opponent's best reply
+		Best reply = null;           // Opponent's best reply
 		int simpleEval;       // Result of an immediate evaluation
 		int bestRow = 0;
 		int bestColumn = 0;
 		int value;
+		int score;
 
 		if( ( simpleEval = positionValue( ) ) != UNCLEAR )
 			return new Best( simpleEval );
 
 		// TODO: implementeren m.b.v. recursie/backtracking
-	    return null;
+
+		if(side == COMPUTER){
+			opp = HUMAN;
+			value = HUMAN_WIN;
+		}else{
+			opp = COMPUTER;
+			value = COMPUTER_WIN;
+		}
+
+		for (int i = 0;i < 9;i++){
+			int row = i/3;
+			int col = i%3;
+
+			if(squareIsEmpty(row,col)) {
+				place(row, col, side);
+				if (isAWin(side)) {
+					if (side == HUMAN) {
+						//bestRow = row;
+						//bestColumn = col;
+						score = 10 - depth;
+					} else {
+						//bestRow = row;
+						//bestColumn = col;
+						score = depth - 10;
+					}
+					scores.add(score);
+					moves.add(i);
+					place(row, col, EMPTY);
+					break;
+				} else {
+					reply = chooseMove(opp, depth + 1);
+				}
+				place(row, col, EMPTY);
+			}
+		}
+		if(side == HUMAN){
+			int maxIndex = 0;
+			for (int i = 0; i < scores.size(); i++){
+				int number = scores.get(i);
+				if ((number > scores.get(maxIndex))){
+					maxIndex = i;
+				}
+			}
+			int finalMove = moves.get(maxIndex);
+			bestRow = finalMove/3;
+			bestColumn = finalMove%3;
+			return new Best(value,bestRow,bestColumn);
+		}else{
+			int minIndex = 0;
+			for (int i = 0; i < scores.size(); i++){
+				int number = scores.get(i);
+				if ((number < scores.get(minIndex))){
+					minIndex = i;
+				}
+			}
+			int finalMove = moves.get(minIndex);
+			bestRow = finalMove/3;
+			bestColumn = finalMove%3;
+			return new Best(value,bestRow,bestColumn);
+		}
     }
 
    
@@ -136,8 +205,10 @@ class TicTacToe
 	// Returns whether 'side' has won in this position
 	private boolean isAWin( int side )
 	{
-	    //TODO:
-	    return true;
+		int positionVal = positionValue();
+		if (side == COMPUTER && positionVal == COMPUTER_WIN){return true;}
+	    if (side == HUMAN && positionVal == HUMAN_WIN){return true;}
+		return false;
     }
 
 	// Play a move, possibly clearing a square
@@ -165,9 +236,9 @@ class TicTacToe
 			int char2 = board[sub2/3][sub2%3];
 			int char3 = board[sub3/3][sub3%3];
 
-			if(char1 == COMPUTER & char2 == COMPUTER & char3 == COMPUTER){
+			if(char1 == COMPUTER && char2 == COMPUTER && char3 == COMPUTER){
 				return COMPUTER_WIN;
-			}else if(char1 == HUMAN & char2 == HUMAN & char3 == HUMAN){
+			}else if(char1 == HUMAN && char2 == HUMAN && char3 == HUMAN){
 				return HUMAN_WIN;
 			}
 		}
