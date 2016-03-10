@@ -19,14 +19,10 @@ class TicTacToe
 	private int side=random.nextInt(2);  
 	private int position=UNCLEAR;
 	private char computerChar,humanChar;
-	//private ArrayList<Integer> scores = new ArrayList<>();
-	//private ArrayList<Integer> moves = new ArrayList<>();
 
 	// Constructor
 	public TicTacToe( )
 	{
-		//scores.clear();
-		//moves.clear();
 		clearBoard( );
 		initSide();
 		initBoard();
@@ -65,11 +61,8 @@ class TicTacToe
 
 	public int chooseMove()
 	{
-		//scores.clear();
-		//moves.clear();
 	    Best best=chooseMove(COMPUTER,0);
 	    return best.row*3+best.column;
-	    //return 0;
     }
     
     // Find optimal move
@@ -88,8 +81,6 @@ class TicTacToe
 		if( ( simpleEval = positionValue( ) ) != UNCLEAR )
 			return new Best( simpleEval );
 
-		// TODO: implementeren m.b.v. recursie/backtracking
-
 		if(side == COMPUTER){
 			opp = HUMAN;
 			value = HUMAN_WIN;
@@ -105,13 +96,9 @@ class TicTacToe
 			if(squareIsEmpty(row,col)) {
 				place(row, col, side);
 				if (isAWin(side)) {
-					if (side == HUMAN) {
-						//bestRow = row;
-						//bestColumn = col;
+					if (side == COMPUTER) {
 						score = 10 - depth;
 					} else {
-						//bestRow = row;
-						//bestColumn = col;
 						score = depth - 10;
 					}
 					scores.add(score);
@@ -120,7 +107,7 @@ class TicTacToe
 					break;
 				} else {
 					reply = chooseMove(opp, depth + 1);
-					if(opp == HUMAN){
+					if(opp == COMPUTER){
 						score = 10 - depth;
 					}else{
 						score = depth - 10;
@@ -132,7 +119,7 @@ class TicTacToe
 			}
 		}
 		int finalMove;
-		if(side == HUMAN){
+		if(side == COMPUTER){
 			int maxIndex = 0;
 			for (int i = 0; i < scores.size(); i++){
 				int number = scores.get(i);
