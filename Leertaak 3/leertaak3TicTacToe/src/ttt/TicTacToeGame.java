@@ -1,8 +1,6 @@
 package ttt;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 class TicTacToe
 {
@@ -21,14 +19,14 @@ class TicTacToe
 	private int side=random.nextInt(2);  
 	private int position=UNCLEAR;
 	private char computerChar,humanChar;
-	private ArrayList<Integer> scores = new ArrayList<>();
-	private ArrayList<Integer> moves = new ArrayList<>();
+	//private ArrayList<Integer> scores = new ArrayList<>();
+	//private ArrayList<Integer> moves = new ArrayList<>();
 
 	// Constructor
 	public TicTacToe( )
 	{
-		scores.clear();
-		moves.clear();
+		//scores.clear();
+		//moves.clear();
 		clearBoard( );
 		initSide();
 		initBoard();
@@ -67,8 +65,8 @@ class TicTacToe
 
 	public int chooseMove()
 	{
-		scores.clear();
-		moves.clear();
+		//scores.clear();
+		//moves.clear();
 	    Best best=chooseMove(COMPUTER,0);
 	    return best.row*3+best.column;
 	    //return 0;
@@ -84,6 +82,8 @@ class TicTacToe
 		int bestColumn = 0;
 		int value;
 		int score;
+		ArrayList<Integer> scores = new ArrayList<>();
+		ArrayList<Integer> moves = new ArrayList<>();
 
 		if( ( simpleEval = positionValue( ) ) != UNCLEAR )
 			return new Best( simpleEval );
@@ -120,10 +120,18 @@ class TicTacToe
 					break;
 				} else {
 					reply = chooseMove(opp, depth + 1);
+					if(opp == HUMAN){
+						score = 10 - depth;
+					}else{
+						score = depth - 10;
+					}
+					scores.add(score);
+					moves.add(reply.row*3+reply.column);
 				}
 				place(row, col, EMPTY);
 			}
 		}
+		int finalMove;
 		if(side == HUMAN){
 			int maxIndex = 0;
 			for (int i = 0; i < scores.size(); i++){
@@ -132,7 +140,7 @@ class TicTacToe
 					maxIndex = i;
 				}
 			}
-			int finalMove = moves.get(maxIndex);
+			finalMove = moves.get(maxIndex);
 			bestRow = finalMove/3;
 			bestColumn = finalMove%3;
 			return new Best(value,bestRow,bestColumn);
@@ -144,7 +152,7 @@ class TicTacToe
 					minIndex = i;
 				}
 			}
-			int finalMove = moves.get(minIndex);
+			finalMove = moves.get(minIndex);
 			bestRow = finalMove/3;
 			bestColumn = finalMove%3;
 			return new Best(value,bestRow,bestColumn);
