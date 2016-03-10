@@ -13,57 +13,50 @@ import java.io.OutputStream;
 //void flush( )               --> Flush buffered bits
 //void close( )               --> Close underlying stream
 
-public class BitOutputStream
-{
-	private OutputStream out;
-	private int buffer;
-	private int bufferPos;
+public class BitOutputStream {
+    private OutputStream out;
+    private int buffer;
+    private int bufferPos;
 
-	public BitOutputStream( OutputStream os )
-	{
-		bufferPos = 0;
-		buffer = 0;
-		out = os;
-	}
+    public BitOutputStream(OutputStream os) {
+        bufferPos = 0;
+        buffer = 0;
+        out = os;
+    }
 
-	/*
-	 * This method writes bits into the output stream (os).
-	 */
-	public void writeBit( int val ) throws IOException
-	{
-		buffer = setBit( buffer, bufferPos++, val );
-		if( bufferPos == BitUtils.BITS_PER_BYTES )
-			flush( );
-	}
+    /*
+     * This method writes bits into the output stream (os).
+     */
+    public void writeBit(int val) throws IOException {
+        buffer = setBit(buffer, bufferPos++, val);
+        if (bufferPos == BitUtils.BITS_PER_BYTES)
+            flush();
+    }
 
-	public void writeBits( int [ ] val ) throws IOException
-	{
-		for( int i = 0; i < val.length; i++ ) {
-			writeBit( val[ i ] );
-		}
-	}    
+    public void writeBits(int[] val) throws IOException {
+        for (int i = 0; i < val.length; i++) {
+            writeBit(val[i]);
+        }
+    }
 
-	public void flush( ) throws IOException
-	{
-		if( bufferPos == 0 )
-			return;
+    public void flush() throws IOException {
+        if (bufferPos == 0)
+            return;
 
-		out.write( buffer );
-		bufferPos = 0;
-		buffer = 0;    
-	}
+        out.write(buffer);
+        bufferPos = 0;
+        buffer = 0;
+    }
 
-	public void close( ) throws IOException
-	{
-		flush( );
-		out.close( );
-	}
+    public void close() throws IOException {
+        flush();
+        out.close();
+    }
 
-	private int setBit( int pack, int pos, int val )
-	{
-		if( val == 1 )
-			pack |= ( val << pos );
-		return pack;
-	}
+    private int setBit(int pack, int pos, int val) {
+        if (val == 1)
+            pack |= (val << pos);
+        return pack;
+    }
 
 }
