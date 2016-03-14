@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_leertaak3filecompressie" default="compile.module.leertaak3filecompressie">
+  <dirname property="module.leertaak3filecompressie.basedir" file="${ant.file.module_leertaak3filecompressie}"/>
+  
+  <property name="module.jdk.home.leertaak3filecompressie" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.leertaak3filecompressie" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.leertaak3filecompressie" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.leertaak3filecompressie" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="leertaak3filecompressie.output.dir" value="${module.leertaak3filecompressie.basedir}/out/production/leertaak3FileCompressie"/>
+  <property name="leertaak3filecompressie.testoutput.dir" value="${module.leertaak3filecompressie.basedir}/out/test/leertaak3FileCompressie"/>
+  
+  <path id="leertaak3filecompressie.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="leertaak3filecompressie.module.production.classpath">
+    <path refid="${module.jdk.classpath.leertaak3filecompressie}"/>
+    <path refid="library.junit-4.12.classpath"/>
+  </path>
+  
+  <path id="leertaak3filecompressie.runtime.production.module.classpath">
+    <pathelement location="${leertaak3filecompressie.output.dir}"/>
+    <path refid="library.junit-4.12.classpath"/>
+  </path>
+  
+  <path id="leertaak3filecompressie.module.classpath">
+    <path refid="${module.jdk.classpath.leertaak3filecompressie}"/>
+    <pathelement location="${leertaak3filecompressie.output.dir}"/>
+    <path refid="library.junit-4.12.classpath"/>
+  </path>
+  
+  <path id="leertaak3filecompressie.runtime.module.classpath">
+    <pathelement location="${leertaak3filecompressie.testoutput.dir}"/>
+    <pathelement location="${leertaak3filecompressie.output.dir}"/>
+    <path refid="library.junit-4.12.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.leertaak3filecompressie">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.leertaak3filecompressie">
+    <patternset refid="excluded.from.module.leertaak3filecompressie"/>
+  </patternset>
+  
+  <path id="leertaak3filecompressie.module.sourcepath">
+    <dirset dir="${module.leertaak3filecompressie.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  <path id="leertaak3filecompressie.module.test.sourcepath">
+    <dirset dir="${module.leertaak3filecompressie.basedir}">
+      <include name="test"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.leertaak3filecompressie" depends="compile.module.leertaak3filecompressie.production,compile.module.leertaak3filecompressie.tests" description="Compile module leertaak3FileCompressie"/>
+  
+  <target name="compile.module.leertaak3filecompressie.production" depends="register.custom.compilers" description="Compile module leertaak3FileCompressie; production classes">
+    <mkdir dir="${leertaak3filecompressie.output.dir}"/>
+    <javac2 destdir="${leertaak3filecompressie.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.leertaak3filecompressie}/javac">
+      <compilerarg line="${compiler.args.leertaak3filecompressie}"/>
+      <bootclasspath refid="leertaak3filecompressie.module.bootclasspath"/>
+      <classpath refid="leertaak3filecompressie.module.production.classpath"/>
+      <src refid="leertaak3filecompressie.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.leertaak3filecompressie"/>
+    </javac2>
+    
+    <copy todir="${leertaak3filecompressie.output.dir}">
+      <fileset dir="${module.leertaak3filecompressie.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.leertaak3filecompressie.tests" depends="register.custom.compilers,compile.module.leertaak3filecompressie.production" description="compile module leertaak3FileCompressie; test classes" unless="skip.tests">
+    <mkdir dir="${leertaak3filecompressie.testoutput.dir}"/>
+    <javac2 destdir="${leertaak3filecompressie.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.leertaak3filecompressie}/javac">
+      <compilerarg line="${compiler.args.leertaak3filecompressie}"/>
+      <bootclasspath refid="leertaak3filecompressie.module.bootclasspath"/>
+      <classpath refid="leertaak3filecompressie.module.classpath"/>
+      <src refid="leertaak3filecompressie.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.leertaak3filecompressie"/>
+    </javac2>
+    
+    <copy todir="${leertaak3filecompressie.testoutput.dir}">
+      <fileset dir="${module.leertaak3filecompressie.basedir}/test">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.leertaak3filecompressie" description="cleanup module">
+    <delete dir="${leertaak3filecompressie.output.dir}"/>
+    <delete dir="${leertaak3filecompressie.testoutput.dir}"/>
+  </target>
+</project>
