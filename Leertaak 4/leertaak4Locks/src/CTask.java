@@ -4,7 +4,7 @@
 public class CTask implements Runnable {
 
     private String name;
-    private CPrinter printer = new CPrinter();
+    private static CPrinter printer = new CPrinter();
 
     public CTask(String name){
         super();
