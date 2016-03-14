@@ -1,11 +1,12 @@
 package ttt;
 
+import java.util.ArrayList;
 import java.util.Random;
 class TicTacToe
 {
 	private static final int HUMAN        = 0; 
 	private static final int COMPUTER     = 1; 
-	public  static final int EMPTY        = 2;
+	public  static final int EMPTY       =  2;
 
 	public  static final int HUMAN_WIN    = 0;
 	public  static final int DRAW         = 1;
@@ -13,6 +14,7 @@ class TicTacToe
 	public  static final int COMPUTER_WIN = 3;
 
 	private int [ ] [ ] board = new int[ 3 ][ 3 ];
+	private char [ ] [ ] showBoard = new char[ 3 ][ 3 ];
     private Random random=new Random();  
 	private int side=random.nextInt(2);  
 	private int position=UNCLEAR;
@@ -23,6 +25,7 @@ class TicTacToe
 	{
 		clearBoard( );
 		initSide();
+		initBoard();
 	}
 	
 	private void initSide()
@@ -30,6 +33,14 @@ class TicTacToe
 	    if (this.side==COMPUTER) { computerChar='X'; humanChar='O'; }
 		else                     { computerChar='O'; humanChar='X'; }
     }
+
+	private void initBoard(){
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < 3; j++){
+				showBoard[i][j] = '.';
+			}
+		}
+	}
     
     public void setComputerPlays()
     {
@@ -50,62 +61,149 @@ class TicTacToe
 
 	public int chooseMove()
 	{
-	    //Best best=chooseMove(COMPUTER);
-	    //return best.row*3+best.column;
-	    return 0;
+	    Best best=chooseMove(COMPUTER,0);
+	    return best.row*3+best.column;
     }
     
     // Find optimal move
-	private Best chooseMove( int side )
+	private Best chooseMove( int side, int depth )
 	{
-		int opp;              // The other side
-		Best reply;           // Opponent's best reply
+		int opp;            // The other side
+		Best reply = null;           // Opponent's best reply
 		int simpleEval;       // Result of an immediate evaluation
 		int bestRow = 0;
 		int bestColumn = 0;
 		int value;
+		int score;
+		ArrayList<Integer> scores = new ArrayList<>();
+		ArrayList<Integer> moves = new ArrayList<>();
+		Best turn = new Best(side == COMPUTER ? HUMAN_WIN : COMPUTER_WIN);
 
-		if( ( simpleEval = positionValue( ) ) != UNCLEAR )
-			return new Best( simpleEval );
+		if(side == COMPUTER){
+			opp = HUMAN;
+			value = HUMAN_WIN;
+		}else{
+			opp = COMPUTER;
+			value = COMPUTER_WIN;
+		}
 
-		// TODO: implementeren m.b.v. recursie/backtracking
-	    return null;
+		for (int i = 0;i < 9;i++){
+			int row = i/3;
+			int col = i%3;
+			//if(squareIsEmpty(row,col)) {
+			if (moveOk(i)){
+				place(row, col, side);
+				if (isAWin(side)) {
+					if (side == HUMAN) {
+						score = 10 - depth;
+					} else {
+						score = depth - 10;
+					}
+					scores.add(score);
+					moves.add(i);
+					//break;
+				} else {
+					reply = chooseMove(opp, depth + 1);
+					if(opp == HUMAN){
+						score = 10 - (depth);
+					}else{
+						score = (depth) - 10;
+					}
+					scores.add(score);
+					moves.add(reply.row*3+reply.column);
+				}
+				place(row, col, EMPTY);
+			}
+		}
+		if(!scores.isEmpty()){
+		int finalMove;
+		if(side == HUMAN){
+			int maxIndex = 0;
+			for (int i = 0; i < scores.size(); i++){
+				int number = scores.get(i);
+				if ((number > scores.get(maxIndex))){
+					maxIndex = i;
+				}
+			}
+			finalMove = moves.get(maxIndex);
+			bestRow = finalMove/3;
+			bestColumn = finalMove%3;
+			return new Best(value,bestRow,bestColumn);
+		}else{
+			int minIndex = 0;
+			for (int i = 0; i < scores.size(); i++){
+				int number = scores.get(i);
+				if ((number < scores.get(minIndex))){
+					minIndex = i;
+				}
+			}
+			finalMove = moves.get(minIndex);
+			bestRow = finalMove/3;
+			bestColumn = finalMove%3;
+			return new Best(value,bestRow,bestColumn);
+		}
+		}
+		return turn;
     }
 
    
     //check if move ok
     public boolean moveOk(int move)
     {
- 	//return ( move>=0 && move <=8 && board[move/3 ][ move%3 ] == EMPTY );
- 	return true;
+		if(move>=0 && move <=8){
+			if (board[move/3 ][ move%3 ] == EMPTY){
+			//if (showBoard[move/3 ][ move%3 ] == EMPTY){
+				return true;
+			}
+		}
+ 	return false;
     }
     
     // play move
     public void playMove(int move)
     {
 		board[move/3][ move%3] = this.side;
-		if (side==COMPUTER) this.side=HUMAN;  else this.side=COMPUTER;
+		if (side==COMPUTER){
+			showBoard[move/3][move%3] = computerChar;
+			this.side=HUMAN;
+		}
+		else{
+			showBoard[move/3][move%3] = humanChar;
+			this.side=COMPUTER;
+		}
 	}
 
 
 	// Simple supporting routines
 	private void clearBoard( )
 	{
-		//TODO:
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < 3; j++){
+				board[i][j] = 2;
+			}
+		}
 	}
 
 
 	private boolean boardIsFull( )
 	{
-		//TODO:
+		for (int [] row: board) {
+			for (int elem: row) {
+				if(elem == EMPTY){
+					return false;
+				}
+			}
+		}
 		return true;
 	}
 
 	// Returns whether 'side' has won in this position
 	private boolean isAWin( int side )
 	{
-	    //TODO:
-	    return true;
+		int positionVal = positionValue();
+		if (side == COMPUTER && positionVal == COMPUTER_WIN){return true;}
+	    if (side == HUMAN && positionVal == HUMAN_WIN){return true;}
+		return false;
     }
 
 	// Play a move, possibly clearing a square
@@ -119,18 +217,44 @@ class TicTacToe
 		return board[ row ][ column ] == EMPTY;
 	}
 
-	// Compute static value of current position (win, draw, etc.)
+	// Compute static value of current position (human-win, computer-win, draw, unclear)
 	private int positionValue( )
 	{
-		// TODO:
+		String[] winningPatterns = {"012","345","678","036","147","258","048","246"};
+
+		for (String elem:winningPatterns) {
+			int sub1 = Integer.parseInt(elem.substring(0,1));
+			int sub2 = Integer.parseInt(elem.substring(1,2));
+			int sub3 = Integer.parseInt(elem.substring(2,3));
+
+			int char1 = board[sub1/3][sub1%3];
+			int char2 = board[sub2/3][sub2%3];
+			int char3 = board[sub3/3][sub3%3];
+
+			if(char1 == COMPUTER && char2 == COMPUTER && char3 == COMPUTER){
+				return COMPUTER_WIN;
+			}else if(char1 == HUMAN && char2 == HUMAN && char3 == HUMAN){
+				return HUMAN_WIN;
+			}
+		}
+		if(boardIsFull()){
+			return DRAW;
+		}
 		return UNCLEAR;
 	}
 	
 	
 	public String toString()
 	{
-	    //TODO:
-		return "...\n...\n...\n";   
+		StringBuilder show = new StringBuilder();
+		for (char [] row: showBoard) {
+			for (char elem: row) {
+				show.append(elem);
+			}
+		}
+		String finalBoard = show.toString();
+
+		return finalBoard.substring(0,3)+"\n"+finalBoard.substring(3,6)+"\n"+finalBoard.substring(6,9)+"\n";
 	}  
 	
 	public boolean gameOver()
