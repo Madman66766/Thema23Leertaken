@@ -68,7 +68,7 @@ class TicTacToe
     // Find optimal move
 	private Best chooseMove( int side, int depth )
 	{
-		int opp;              // The other side
+		int opp;            // The other side
 		Best reply = null;           // Opponent's best reply
 		int simpleEval;       // Result of an immediate evaluation
 		int bestRow = 0;
@@ -77,9 +77,7 @@ class TicTacToe
 		int score;
 		ArrayList<Integer> scores = new ArrayList<>();
 		ArrayList<Integer> moves = new ArrayList<>();
-
-		if( ( simpleEval = positionValue( ) ) != UNCLEAR )
-			return new Best( simpleEval );
+		Best turn = new Best(side == COMPUTER ? HUMAN_WIN : COMPUTER_WIN);
 
 		if(side == COMPUTER){
 			opp = HUMAN;
@@ -92,25 +90,24 @@ class TicTacToe
 		for (int i = 0;i < 9;i++){
 			int row = i/3;
 			int col = i%3;
-
-			if(squareIsEmpty(row,col)) {
+			//if(squareIsEmpty(row,col)) {
+			if (moveOk(i)){
 				place(row, col, side);
 				if (isAWin(side)) {
-					if (side == COMPUTER) {
+					if (side == HUMAN) {
 						score = 10 - depth;
 					} else {
 						score = depth - 10;
 					}
 					scores.add(score);
 					moves.add(i);
-					place(row, col, EMPTY);
-					break;
+					//break;
 				} else {
 					reply = chooseMove(opp, depth + 1);
-					if(opp == COMPUTER){
-						score = 10 - depth;
+					if(opp == HUMAN){
+						score = 10 - (depth);
 					}else{
-						score = depth - 10;
+						score = (depth) - 10;
 					}
 					scores.add(score);
 					moves.add(reply.row*3+reply.column);
@@ -118,8 +115,9 @@ class TicTacToe
 				place(row, col, EMPTY);
 			}
 		}
+		if(!scores.isEmpty()){
 		int finalMove;
-		if(side == COMPUTER){
+		if(side == HUMAN){
 			int maxIndex = 0;
 			for (int i = 0; i < scores.size(); i++){
 				int number = scores.get(i);
@@ -144,6 +142,8 @@ class TicTacToe
 			bestColumn = finalMove%3;
 			return new Best(value,bestRow,bestColumn);
 		}
+		}
+		return turn;
     }
 
    
