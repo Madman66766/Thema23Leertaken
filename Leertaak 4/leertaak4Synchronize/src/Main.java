@@ -3,9 +3,12 @@
  */
 public class Main {
 
+    public static int max = 3;
+
     public static void main(String args[]) {
-        for (int i = 0; i < 4; i++){
-            new Thread(new CTask(i, i + 1)).start();
+
+        for (int i = 0; i < max + 1; i++){
+            new Thread(new CTask(i)).start();
         }
     }
 }

@@ -1,3 +1,4 @@
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -6,14 +7,21 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class CPrinter {
 
-    private final Lock lock = new ReentrantLock(); // Create a lock
+    private static final Lock lock = new ReentrantLock(); // Create a lock
+    private static final Condition smaller = lock.newCondition();
+    private static final Condition bigger = lock.newCondition();
 
-
-    public void print(CTask task){
+    public void print(CTask task) throws InterruptedException {
         lock.lock(); // Acquire the lock
-        System.out.print(task);
-        System.out.print(task);
-        System.out.println();
+        if (task.getNumber() < CTask.next){
+            smaller.await();
+        } else {
+            System.out.print(task);
+            System.out.print(task);
+            System.out.println();
+            CTask.next--;
+            bigger.signalAll();
+        }
         lock.unlock(); // Release the lock
     }
 }
