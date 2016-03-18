@@ -1,0 +1,17 @@
+Leertaak 4: Chris de Windt & Serkan Orhan
+Opdracht 1
+	Exercise 30.4) 
+	Je roept de run method in de Runnable direct aan in plaats van eerst start aan te roepen. Maar het programma blijft hetzelfde.
+	Exercise 30.8)
+	Met de method java.lang.Thread.setPriority(). De default thread priority is 5.
+	Controlling threads using locks)
+	Zie leertaak4Locks
+	Controlling threads using conditions)
+	Zie leertaak4Conditions
+Opdracht 3
+
+Opdracht 5
+
+Opdracht 6, 7, 8
+Zie leertaak4MobileRobot
+
