@@ -36,6 +36,10 @@ public class MobileRobotAI implements Runnable {
 
 	private String result;
 
+	private double[] start = new double[2];
+	private int loop;
+
+
 	/**
 	 * closestObstacle[0] = direction to closest obstacle
 	 * closestObstacle[1] = distance to closest obstacle
@@ -68,7 +72,7 @@ public class MobileRobotAI implements Runnable {
 				robot.setOutput(output);
 
 //      ases where a variable value is never used after its assignment, i.e.:
-				System.out.println("intelligence running");
+//				System.out.println("intelligence running");
 
 //				robot.sendCommand("R1.GETPOS");
 //				result = input.readLine();
@@ -206,19 +210,15 @@ public class MobileRobotAI implements Runnable {
 //				map.drawLaserScan(position, measures);
 				update();
 				moveToClosestObstacle();
-				followWall(checkSurroundingObstacles((int)position[0], (int)position[1]));
-
-//				for (int row= 0 ; row < grid.length; row++){
-//					for (int col = 0; col < grid[row].length; col++){
-//						if (grid[row][col] == map.getObstacle()) {
-//							checkSurroundingObstacles(row, col);
-//						}
-//					}
-//				}
-
-
-
-				this.running = false;
+				update();
+				while(running){
+					if(checkWall()) {
+						followWall();
+					}else{
+						update();
+					}
+					checkPosition();
+				}
 			} catch (IOException ioe) {
 				System.err.println("execution stopped");
 				running = false;
@@ -241,46 +241,116 @@ public class MobileRobotAI implements Runnable {
 	}
 
 	private void moveToClosestObstacle() throws IOException {
-		robot.sendCommand("P1.ROTATERIGHT " + closestObstacle[0]);
+		int direction = (int) closestObstacle[0];
+		String command = "ROTATE";
+		switch(direction){
+			case 0:
+				// rijdt vooruit
+				command = "";
+				break;
+			case 90:
+			case 180:
+				command = "ROTATERIGHT " + direction;
+				break;
+			case 270:
+				command = "ROTATELEFT " + (360 - direction);
+				break;
+		}
+		robot.sendCommand("P1." + command);
 		result = input.readLine();
 
-		robot.sendCommand("P1.MOVEFW " + (closestObstacle[1]));
+		robot.sendCommand("P1.MOVEFW " + (closestObstacle[1] - 10));
 		result = input.readLine();
 
 		robot.sendCommand("R1.GETPOS");
 		result = input.readLine();
 		parsePosition(result, position);
+
+		start[0] = position[0];
+		start[1] = position[1];
 	}
 
+	private void checkPosition() throws IOException {
+		double deltaY = start[0] - position[0];
+		double deltaX = start[1] - position[1];
 
-	private int checkSurroundingObstacles(int row, int column) throws IOException {
-		int [] [] surroundings = {
-				{row - 1, column},		// top
-				{row	, column + 1},	// right
-				{row + 1, column},		// bottom
-				{row	, column - 1}	// left
-		};
-		int direction = -1;
+		if (deltaY < 0) deltaY = deltaY * - 1;
+		if (deltaX < 0) deltaX = deltaX * - 1;
 
-		for (int i = 0; i < surroundings.length; i++){
-			try {
-				if (grid[surroundings[i][0]][surroundings[i][1]] == map.getObstacle()){
-					direction = i;
+
+		if(deltaX < 10.0 && deltaY < 10.0) {
+			this.running = false;}
+	}
+
+	private boolean checkWall() throws IOException {
+		boolean validWall = false;
+		//int column = (int) position[0];
+		//int row = (int) position[1];
+
+		int robotDir = (int) position[2];
+		int wallRange = (int) measures[90];
+			if (measures[0] <= 30){
+				robot.sendCommand("P1.ROTATELEFT 90");
+				result = input.readLine();
+				validWall = true;
+			}else if ((measures[0] > 30 && measures[90] > 30) || (measures[0] >= 100 && measures[90] >= 100)){
+				if(measures[45] <= 30){
+					robot.sendCommand("P1.MOVEFW 20");
+					result = input.readLine();
+				}else {
+					robot.sendCommand("P1.MOVEFW 20");
+					result = input.readLine();
+
+					robot.sendCommand("P1.ROTATERIGHT 90");
+					result = input.readLine();
+
+					robot.sendCommand("R1.GETPOS");
+					result = input.readLine();
+					parsePosition(result, position);
+
+					robot.sendCommand("L1.SCAN");
+					result = input.readLine();
+					parseMeasures(result, measures);
+					map.drawLaserScan(position, measures);
+
+					if(measures[0] <= 30){
+						robot.sendCommand("P1.MOVEFW 10");
+						result = input.readLine();
+					}else {
+						robot.sendCommand("P1.MOVEFW 20");
+						result = input.readLine();
+					}
 				}
-			} catch (ArrayIndexOutOfBoundsException ex) {
-				continue;
+				robot.sendCommand("R1.GETPOS");
+				result = input.readLine();
+				parsePosition(result, position);
+
+				robot.sendCommand("L1.SCAN");
+				result = input.readLine();
+				parseMeasures(result, measures);
+				map.drawLaserScan(position, measures);
+			}else if (measures[0] >= (wallRange-1)){
+				validWall = true;
 			}
-		}
-
-		if (direction == -1) {
-			checkSurroundingObstacles(row, column);
-		}
-
-		return direction;
+			else{
+				robot.sendCommand("P1.MOVEFW 10");
+				result = input.readLine();
+			}
+		robot.sendCommand("R1.GETPOS");
+		result = input.readLine();
+		parsePosition(result, position);
+		return validWall;
 	}
 
-	private void followWall(int direction) throws IOException{
-		System.out.println(direction);
+	private void followWall() throws IOException{
+		if(measures[0] > 40) {
+			robot.sendCommand("P1.MOVEFW 20");
+			result = input.readLine();
+		}else{
+			robot.sendCommand("P1.MOVEFW 10");
+			result = input.readLine();
+		}
+		update();
 	}
 
 	private void parsePosition(String value, double position[]) {
@@ -325,9 +395,11 @@ public class MobileRobotAI implements Runnable {
 				// Printing out all the degrees and what it encountered.
 				System.out.println("direction = " + direction + " distance = " + distance);
 
-				if (distance < closestObstacle[1]){
-					closestObstacle[0] = direction;
-					closestObstacle[1] = distance;
+				if(direction == 0 || direction == 90 || direction == 180 || direction == 270){
+					if (distance < closestObstacle[1]){
+						closestObstacle[0] = direction;
+						closestObstacle[1] = distance;
+					}
 				}
 			}
 		}
