@@ -42,7 +42,7 @@ public class DelayController extends JMenu implements ActionListener {
 		super("Delay");
 
 		this.environment = environment;
-		this.delay = 5;
+		this.delay = 1;
 		MobileRobot.delay = this.delay;
 
 

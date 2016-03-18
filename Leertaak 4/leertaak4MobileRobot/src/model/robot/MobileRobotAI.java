@@ -271,15 +271,35 @@ public class MobileRobotAI implements Runnable {
 	}
 
 	private void checkPosition() throws IOException {
-		double deltaY = start[0] - position[0];
-		double deltaX = start[1] - position[1];
+//		double offset = 20.0;
+//		double[][] surroundings = {
+//				{start[0] - offset, start[1]},
+//				{start[0] - offset, start[1] + offset},
+//				{start[0]	, start[1] + offset},
+//				{start[0] + offset, start[1] + offset},
+//				{start[0], start[1]},
+//				{start[0] + offset, start[1]},
+//				{start[0] + offset, start[1] - offset},
+//				{start[0]	, start[1] - offset},
+//				{start[0] - offset, start[1] - offset}
+//		};
+//
+//		for (double[] surrounding: surroundings){
+//			if (surrounding[0] == position[0] && surrounding[1] == position[1]){
+//				this.running = false;
+//			}
+//		}
+		double range = 9.0;
+		double deltaY = position[0] - start[0];
+		double deltaX = position[1] - start[1];
 
-		if (deltaY < 0) deltaY = deltaY * - 1;
-		if (deltaX < 0) deltaX = deltaX * - 1;
+		if (deltaY < 0.0) deltaY = deltaY * - 1.0;
+		if (deltaX < 0.0) deltaX = deltaX * - 1.0;
 
 
-		if(deltaX < 10.0 && deltaY < 10.0) {
-			this.running = false;}
+		if(deltaX <= range && deltaY <= range) {
+			this.running = false;
+		}
 	}
 
 	private boolean checkWall() throws IOException {
