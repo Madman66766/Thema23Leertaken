@@ -32,7 +32,8 @@ public class MobileRobotAI implements Runnable {
 	private BufferedReader input;
 	private char[][] grid;
 	private double[] position;
-	private double[] measures;
+	private double[] measuresLaser;
+	private double[] measuresSonar;
 
 	private String result;
 
@@ -61,7 +62,8 @@ public class MobileRobotAI implements Runnable {
 	public void run() {
 		this.running = true;
 		position = new double[3];
-		measures = new double[360];
+		measuresLaser = new double[360];
+		measuresSonar = new double[360];
 		while (running) {
 			try {
 
@@ -80,8 +82,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.MOVEBW 60");
 //				result = input.readLine();
@@ -92,8 +94,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.ROTATERIGHT 90");
 //				result = input.readLine();
@@ -107,8 +109,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.ROTATELEFT 45");
 //				result = input.readLine();
@@ -122,8 +124,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.MOVEFW 70");
 //				result = input.readLine();
@@ -137,8 +139,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.MOVEFW 90");
 //				result = input.readLine();
@@ -149,8 +151,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.ROTATERIGHT 45");
 //				result = input.readLine();
@@ -164,8 +166,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.ROTATERIGHT 45");
 //				result = input.readLine();
@@ -179,8 +181,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.ROTATERIGHT 90");
 //				result = input.readLine();
@@ -194,8 +196,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 //
 //				robot.sendCommand("P1.MOVEFW 100");
 //				result = input.readLine();
@@ -206,8 +208,8 @@ public class MobileRobotAI implements Runnable {
 //
 //				robot.sendCommand("L1.SCAN");
 //				result = input.readLine();
-//				parseMeasures(result, measures);
-//				map.drawLaserScan(position, measures);
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
 				update();
 				moveToClosestObstacle();
 				update();
@@ -234,8 +236,8 @@ public class MobileRobotAI implements Runnable {
 
 		robot.sendCommand("L1.SCAN");
 		result = input.readLine();
-		parseMeasures(result, measures);
-		map.drawLaserScan(position, measures);
+		parseMeasures(result, measuresLaser);
+		map.drawLaserScan(position, measuresLaser);
 
 		grid = map.getGrid();
 	}
@@ -271,24 +273,6 @@ public class MobileRobotAI implements Runnable {
 	}
 
 	private void checkPosition() throws IOException {
-//		double offset = 20.0;
-//		double[][] surroundings = {
-//				{start[0] - offset, start[1]},
-//				{start[0] - offset, start[1] + offset},
-//				{start[0]	, start[1] + offset},
-//				{start[0] + offset, start[1] + offset},
-//				{start[0], start[1]},
-//				{start[0] + offset, start[1]},
-//				{start[0] + offset, start[1] - offset},
-//				{start[0]	, start[1] - offset},
-//				{start[0] - offset, start[1] - offset}
-//		};
-//
-//		for (double[] surrounding: surroundings){
-//			if (surrounding[0] == position[0] && surrounding[1] == position[1]){
-//				this.running = false;
-//			}
-//		}
 		double range = 9.0;
 		double deltaY = position[0] - start[0];
 		double deltaX = position[1] - start[1];
@@ -308,13 +292,13 @@ public class MobileRobotAI implements Runnable {
 		//int row = (int) position[1];
 
 		int robotDir = (int) position[2];
-		int wallRange = (int) measures[90];
-			if (measures[0] <= 30){
+		int wallRange = (int) measuresLaser[90];
+			if (measuresLaser[0] <= 30){
 				robot.sendCommand("P1.ROTATELEFT 90");
 				result = input.readLine();
 				validWall = true;
-			}else if ((measures[0] > 30 && measures[90] > 30) || (measures[0] >= 100 && measures[90] >= 100)){
-				if(measures[45] <= 30){
+			}else if ((measuresLaser[0] > 30 && measuresLaser[90] > 30) || (measuresLaser[0] >= 100 && measuresLaser[90] >= 100)){
+				if(measuresLaser[45] <= 30){
 					robot.sendCommand("P1.MOVEFW 20");
 					result = input.readLine();
 				}else {
@@ -330,10 +314,10 @@ public class MobileRobotAI implements Runnable {
 
 					robot.sendCommand("L1.SCAN");
 					result = input.readLine();
-					parseMeasures(result, measures);
-					map.drawLaserScan(position, measures);
+					parseMeasures(result, measuresLaser);
+					map.drawLaserScan(position, measuresLaser);
 
-					if(measures[0] <= 30){
+					if(measuresLaser[0] <= 30){
 						robot.sendCommand("P1.MOVEFW 10");
 						result = input.readLine();
 					}else {
@@ -347,9 +331,9 @@ public class MobileRobotAI implements Runnable {
 
 				robot.sendCommand("L1.SCAN");
 				result = input.readLine();
-				parseMeasures(result, measures);
-				map.drawLaserScan(position, measures);
-			}else if (measures[0] >= (wallRange-1)){
+				parseMeasures(result, measuresLaser);
+				map.drawLaserScan(position, measuresLaser);
+			}else if (measuresLaser[0] >= (wallRange-1)){
 				validWall = true;
 			}
 			else{
@@ -363,7 +347,7 @@ public class MobileRobotAI implements Runnable {
 	}
 
 	private void followWall() throws IOException{
-		if(measures[0] > 40) {
+		if(measuresLaser[0] > 40) {
 			robot.sendCommand("P1.MOVEFW 20");
 			result = input.readLine();
 		}else{

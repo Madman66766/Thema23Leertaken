@@ -29,6 +29,7 @@ package gui.views;
  */
 
 import model.device.Device;
+import model.device.Sonar;
 import model.environment.Environment;
 import model.environment.Obstacle;
 
@@ -122,8 +123,28 @@ public class SimulationView extends JPanel implements ActionListener {
 		g.fillPolygon(globalShape);
 		g.setColor(d.getForegroundColor());
 		g.drawPolygon(globalShape);
+
+		if (d instanceof Sonar) {
+			paintSonar(g, d);
+		}
 	}
 
+	private void paintSonar(Graphics g, Device d){
+		int x = (int) d.getRobotPosition().getX();
+		int y = (int) d.getRobotPosition().getY();
+		int r = (int) (int) ((360 - ((Sonar) d).getSteps()) / (360 / ((Sonar) d).getRange()));
+		int r2 = (int) (int) ((180 - ((Sonar) d).getSteps()) / (360 / ((Sonar) d).getRange()));
+		int r3 = (int) (int) ((270 - ((Sonar) d).getSteps()) / (360 / ((Sonar) d).getRange()));
+		int r4 = (int) (int) ((90 - ((Sonar) d).getSteps()) / (360 / ((Sonar) d).getRange()));
+
+		if (r != (360 / (360 / ((Sonar) d).getRange()))) {
+			g.setColor(d.getBackgroundColor());
+			g.fillOval(x - r, y - r, r * 2, r * 2);
+			g.drawOval(x - r2, y - r2, r2 * 2, r2 * 2);
+			g.drawOval(x - r3, y - r3, r3 * 2, r3 * 2);
+			g.drawOval(x - r4, y - r4, r4 * 2, r4 * 2);
+		}
+	}
 
 	/**
 	 * Invoked when an action occurs.
@@ -136,8 +157,5 @@ public class SimulationView extends JPanel implements ActionListener {
 
 		}
 		repaint();
-
 	}
-
-
 }
