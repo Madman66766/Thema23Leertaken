@@ -343,8 +343,8 @@ public class MobileRobotAI implements Runnable {
 		//int column = (int) position[0];
 		//int row = (int) position[1];
 
-		int wallRangeSon = (int) measuresSonar[90];
-		int wallRangeLas = (int) measuresLaser[90];
+		//int wallRangeSon = (int) measuresSonar[90];
+		//int wallRangeLas = (int) measuresLaser[90];
 			if (measuresLaser[0] <= 20 || measuresSonar[0] <= 20){
 				robot.sendCommand("P1.ROTATELEFT 90");
 				result = input.readLine();
