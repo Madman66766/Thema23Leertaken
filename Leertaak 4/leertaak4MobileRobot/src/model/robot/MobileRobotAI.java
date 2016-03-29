@@ -9,6 +9,8 @@ import java.io.PrintWriter;
 import java.io.PipedOutputStream;
 import java.io.IOException;
 
+import java.util.LinkedList;
+import java.util.Stack;
 import java.util.StringTokenizer;
 
 /**
@@ -38,7 +40,7 @@ public class MobileRobotAI implements Runnable {
 	private String result;
 
 	private double[] start = new double[2];
-	private int loop;
+	private double[] wall;
 
 
 	/**
@@ -72,9 +74,153 @@ public class MobileRobotAI implements Runnable {
 				PrintWriter output = new PrintWriter(new PipedOutputStream(pipeIn), true);
 
 				robot.setOutput(output);
+<<<<<<< Updated upstream
 				System.out.println("intelligence running");
+=======
+
+//      ases where a variable value is never used after its assignment, i.e.:
+//				System.out.println("intelligence running");
+
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.MOVEBW 60");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.ROTATERIGHT 90");
+//				result = input.readLine();
+//
+//				robot.sendCommand("P1.MOVEFW 100");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.ROTATELEFT 45");
+//				result = input.readLine();
+//
+//				robot.sendCommand("P1.MOVEFW 70");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.MOVEFW 70");
+//				result = input.readLine();
+//
+//				robot.sendCommand("P1.ROTATERIGHT 45");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.MOVEFW 90");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.ROTATERIGHT 45");
+//				result = input.readLine();
+//
+//				robot.sendCommand("P1.MOVEFW 90");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.ROTATERIGHT 45");
+//				result = input.readLine();
+//
+//				robot.sendCommand("P1.MOVEFW 100");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.ROTATERIGHT 90");
+//				result = input.readLine();
+//
+//				robot.sendCommand("P1.MOVEFW 80");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+//
+//				robot.sendCommand("P1.MOVEFW 100");
+//				result = input.readLine();
+//
+//				robot.sendCommand("R1.GETPOS");
+//				result = input.readLine();
+//				parsePosition(result, position);
+//
+//				robot.sendCommand("L1.SCAN");
+//				result = input.readLine();
+//				parseMeasures(result, measuresLaser);
+//				map.drawLaserScan(position, measuresLaser);
+
+
+>>>>>>> Stashed changes
 				update();
 				moveToClosestObstacle();
+				wall = getWall();
 				update();
 				while(running){
 					if(checkWall()) {
@@ -141,17 +287,55 @@ public class MobileRobotAI implements Runnable {
 	}
 
 	private void checkPosition() throws IOException {
-		double range = 9.0;
-		double deltaY = position[0] - start[0];
-		double deltaX = position[1] - start[1];
+		LinkedList linkedList = new LinkedList();
 
-		if (deltaY < 0.0) deltaY = deltaY * - 1.0;
-		if (deltaX < 0.0) deltaX = deltaX * - 1.0;
+		while (){
+			double x = wall[0];
+			double y = wall[1];
 
+			double [] [] surroundings = {
+					{x - 10, y},		// top
+					{x	, y + 10},		// right
+					{x + 10, y},		// bottom
+					{x 	, y - 10}		// left
+			};
 
-		if(deltaX <= range && deltaY <= range) {
-			this.running = false;
+			for (double[] surrounding: surroundings){
+				if(grid[(int)surrounding[0]][(int)surrounding[1]] == map.getObstacle()) {
+					linkedList.add(surroundings[0]);
+					break;
+				}
+			}
 		}
+
+
+
+
+//		double range = 9.0;
+//		double deltaY = position[0] - start[0];
+//		double deltaX = position[1] - start[1];
+//
+//		if (deltaY < 0.0) deltaY = deltaY * - 1.0;
+//		if (deltaX < 0.0) deltaX = deltaX * - 1.0;
+//
+//
+//		if(deltaX <= range && deltaY <= range) {
+//			this.running = false;
+//		}
+	}
+
+	private double[] getWall(){
+		double[] wall = new double[2];
+		for (int i = 0; i < grid.length; i++){
+			for (int j = 0; j < grid[i].length;j++) {
+				if (grid[i][j] == map.getObstacle()){
+					wall[0] = i;
+					wall[1] = j;
+					return wall;
+				}
+			}
+		}
+		return wall;
 	}
 
 	private boolean checkWall() throws IOException {
